@@ -1,0 +1,860 @@
+var express = require('express')
+var mongoClient = require('mongodb').MongoClient;
+var M_url = "mongodb://localhost:27017/";
+var app = express()
+var cors = require('cors')
+app.use(cors())
+
+app.get("/getmembers",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Members").find({}).project({_id:0,position:0,assigned:0}).toArray(function(err,res2){
+            if (err) throw err;
+            res.json(res2)
+            db.close()
+        })
+    })
+});
+
+app.get("/auth/:pos/:user/:pass",(req,res)=>{
+    var pos = ""
+    if(req.params.pos=="technician"){
+        pos = "Technician"
+    }
+    else if(req.params.pos=="administrator"){
+        pos = "Administrator"
+    }
+    else if(req.params.pos == "incharge"){
+        pos = "Incharge"
+    }
+    else if(req.params.pos == "admin"){
+        pos = "admin"
+    }
+    else if(req.params.pos == "hod"){
+        pos = "HOD"
+    }
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        console.log(pos+req.params.user+req.params.pass)
+        dbo.collection("Members").find({$and:[{"position":pos,"name":req.params.user,"password":req.params.pass}]}).count(function(err,count){
+            if (err) throw err;
+            if(count==1){
+                res.json({status:"success"})
+            }
+            else{
+                res.json({status:"error"})
+            }
+            console.log(count)
+            db.close()
+        })
+    })
+})
+
+app.get("/getNames/:pp",(req,res)=>{
+    var pos = ""
+    if(req.params.pp=="technician"){
+        pos = "Technician"
+    }
+    else if(req.params.pp=="administrator"){
+        pos = "Administrator"
+    }
+    else if(req.params.pp == "incharge"){
+        pos = "Incharge"
+    }
+    else if(req.params.pp == "admin"){
+        pos = "admin"
+    }
+    else if(req.params.pp == "hod"){
+        pos = "HOD"
+    }
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Members").find({"position":pos}).project({_id:0,position:0,assigned:0}).toArray(function(err,res2){
+            if (err) throw err;
+            console.log(res2)
+            res.json(res2)
+            db.close()
+        })
+    })
+});
+
+app.get("/getNotAsstech",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Members").find({"assigned":false,"position":"Technician"}).project({_id:0,position:0,assigned:0}).toArray(function(err,res2){
+            if (err) throw err;
+            res.json(res2)
+            db.close()
+        })
+    })
+});
+
+app.get("/getNotAssInch",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Members").find({"assigned":false,"position":"Incharge"}).project({_id:0,position:0,assigned:0}).toArray(function(err,res2){
+            if (err) throw err;
+            res.json(res2)
+            db.close()
+        })
+    })
+});
+
+app.get("/getlabslist",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Labs").find({}).project({_id:0,incharge:0,technician:0,count:0,working:0,not:0}).toArray(function(err,res2){
+            if (err) throw err;
+            res.json(res2)
+            db.close()
+        })
+    })
+});
+
+app.get("/getNotAssHOD",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Members").find({"assigned":false,"position":"HOD"}).project({_id:0,position:0,assigned:0}).toArray(function(err,res2){
+            if (err) throw err;
+            res.json(res2)
+            db.close()
+        })
+    })
+});
+
+app.get("/getDeptlist",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Departments").find({}).project({_id:0,hod:0}).toArray(function(err,res2){
+            if (err) throw err;
+            res.json(res2)
+            db.close()
+        })
+    })
+});
+
+app.get("/getSystemslist/:lab",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Systems").find({lab:req.params.lab,status:"working"}).project({_id:0,lab:0,status:0}).toArray(function(err,res2){
+            if (err) throw err;
+            res.json(res2)
+            db.close()
+        })
+    })
+});
+
+app.get("/insertMember/:name/:position/:pass",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        var ins = {name : req.params.name,position : req.params.position, assigned : false, password : req.params.pass};
+        dbo.collection("Members").insertOne(ins,function(err,res2){
+            if(err) throw err;
+            res.json([{mes:"success"}])
+            db.close();
+        })
+    })
+});
+
+app.get("/getMD/:name",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Members").find({name:req.params.name}).project({_id:0,assigned:0}).toArray(function(err,res2){
+            if (err) throw err;
+            res.json(res2)
+            db.close()
+        })
+    })
+})
+
+app.get("/updateMember/:ename/:cname/:position/:pass",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        var qu = {name : req.params.ename}
+        if(req.params.pass.length>0)
+        var ins = {$set : {name : req.params.cname,position : req.params.position}};
+        else
+        var ins = {$set : {name : req.params.cname,position : req.params.position,password : req.params.pass}};
+        dbo.collection("Members").updateOne(qu,ins,function(err,res2){
+            if(err) throw err;
+            res.json([{mes:"success"}])
+            db.close();
+        })
+    })
+});
+
+app.get("/deleteMember/:name",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        var qu = {name : req.params.name}
+        dbo.collection("Members").find(qu).project({_id:0,name:0,position:0,password:0}).toArray(function(err,res3){
+            console.log(res3[0].assigned)
+            if(!res3[0].assigned){
+                dbo.collection("Members").deleteOne(qu,function(err,res2){
+                    if(err) throw err;
+                    res.json([{mes:"success"}])
+                    db.close();
+                })
+            }
+            else{
+                res.json([{mes:"response"}])
+                db.close();
+            }
+        })
+    })
+});
+
+app.get("/addLab/:lname/:inch/:tech/:num",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        var qu = {name : req.params.lname,incharge:req.params.inch,technician:req.params.tech,count:req.params.num,working:req.params.num,not:0};
+        dbo.collection("Labs").insertOne(qu,function(err,res2){
+            if(err) throw err;
+            
+        });
+        var data = Array();
+        for(var i=1;i<=req.params.num;i++){
+            var sys = { name : req.params.lname+"sys"+i,lab : req.params.lname, status : "working"}
+            data.push(sys);
+        }
+        var dinch = {name : req.params.inch}
+        var dtech = { name : req.params.tech}
+        var ins = {$set : {assigned : true}};
+        dbo.collection("Members").updateOne(dinch,ins,function(err,rr){
+            if(err) throw err;
+        })
+        dbo.collection("Members").updateOne(dtech,ins,function(err,rr){
+            if(err) throw err;
+        })
+        dbo.collection("Systems").insertMany(data,function(err,res3){
+            if(err) throw err;
+            res.json([{mes:"success"}])
+            db.close()
+        })
+
+    })
+});
+
+app.get("/updateLabs/:lab/:inch/:tech",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        var pinch = ""
+        var ptech = ""
+        var inch = (req.params.inch!=null)?req.params.inch:"null"
+        var tech = (req.params.tech!=null)?req.params.tech:"null"
+
+        dbo.collection("Labs").find({name:req.params.lab}).project({_id:0,name:0,count:0,working:0,not:0}).toArray(function(err,res2){
+            if(err) throw err;
+            this.pinch = (inch!="null")?res2[0].incharge:"null"
+            this.ptech = (tech!="null")?res2[0].technician:"null"
+            var cond2 = { $or : [{name:res2[0].incharge},{name:res2[0].technician}]}
+            var ins2 = { $set : {assigned : false}}
+            console.log(cond2)
+            dbo.collection("Members").updateMany(cond2,ins2,function(err,res4){
+                if(err) throw err;
+            })
+        })
+        dbo.collection("Labs").updateOne({name:req.params.lab},{$set : {incharge : inch,technician : tech}},function (err,rrr){
+            if(err) throw err;
+            
+        })
+        var cond = { $or : [{name:inch},{name:tech}]}
+        var ins = { $set : {assigned : true}}
+        dbo.collection("Members").updateMany(cond,ins,function(err,res3){
+            if(err) throw err;
+            dbo.collection("Problems").updateMany({lab:req.params.lab},{$set:{assigned_to:tech}},function(err,re4){
+                if(err) throw err;
+                res.json([{mes:"success"}])
+            })
+            db.close()
+        })
+        
+    })
+});
+
+app.get("/deleteLab/:name",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Labs").find({name:req.params.name}).project({_id:0,name:0,count:0,working:0,not:0}).toArray(function(err,res2){
+            if(err) throw err;
+            var cond2 = { $or : [{name:res2[0].incharge},{name:res2[0].technician}]}
+            var ins2 = { $set : {assigned : false}}
+            console.log(cond2)
+            dbo.collection("Members").updateMany(cond2,ins2,function(err,res4){
+                if(err) throw err;
+            })
+        })
+        var qu = {name : req.params.name}
+        dbo.collection("Labs").deleteOne(qu,function(err,res2){
+            if(err) throw err;
+        })
+        dbo.collection("Systems").deleteMany({lab:req.params.name},function(err,res3){
+            if(err) throw err;
+            res.json([{mes:"success"}])
+            db.close();
+        })
+    })
+});
+
+app.get("/insertDept/:name/:hod",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        var ins = {name : req.params.name,hod : req.params.hod,};
+        dbo.collection("Departments").insertOne(ins,function(err,res2){
+            if(err) throw err;
+            
+        })
+        dbo.collection("Members").updateOne({name:req.params.hod,position:"HOD"},{$set:{assigned:true}},function(err,res3){
+            if(err) throw err;
+            res.json([{mes:"success"}])
+            db.close();
+        })
+    })
+});
+
+app.get("/modDept/:dept/:chod",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Departments").find({name:req.params.dept}).project({_id:0,name:0}).toArray(function(err,res3){
+            if(err) throw err;
+            dbo.collection("Members").updateOne({name:res3[0].hod,position:"HOD"},{$set:{assigned:false}},function(err,res4){
+                if(err) throw err;
+            })
+            dbo.collection("Members").updateOne({name:req.params.chod,position:"HOD"},{$set:{assigned:true}},function(err,res4){
+                if(err) throw err;
+            })
+        })
+        dbo.collection("Departments").updateOne({name:req.params.dept},{$set:{hod:req.params.chod}},function(err,res3){
+            if(err) throw err;
+            res.json([{mes:"success"}])
+            db.close();
+        })
+    })
+});
+
+app.get("/addPeriDept/:dept/:name/:type",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if(err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("DeptPeri").insertOne({name:req.params.name,dept:req.params.dept,type:req.params.type,assigned_to:"",mes:"",status:"working"},function(err,res2){
+            if(err) throw err;
+            res.json([{mes:"success"}])
+            db.close()
+        })
+    })
+});
+
+app.get("/deleteDept/:dept",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Departments").find({name:req.params.dept}).project({_id:0,name:0}).toArray(function(err,res3){
+            if(err) throw err;
+            dbo.collection("Members").updateOne({name:res3[0].hod,position:"HOD"},{$set:{assigned:false}},function(err,res4){
+                if(err) throw err;
+            })
+        })
+        var qu = {name : req.params.dept}
+        dbo.collection("Departments").deleteMany(qu,function(err,res2){
+            if(err) throw err;
+            res.json([{mes:"success"}])
+            db.close();
+        })
+    })
+});
+
+app.get("/insertProblem/:lab/:sys/:mes",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Problems").find({}).count(function(err,count){
+            if(err) throw err;
+            var dtk = count +1
+            dbo.collection("Labs").find({name:req.params.lab}).project({_id:0,name:0,incharge:0,count:0}).toArray(function(err,res2){
+                if(err) throw err;
+                console.log(res2)
+                var tech = res2[0].technician
+                var dworking = res2[0].working-1
+                var dnott = res2[0].not+1
+                var today = new Date()
+
+                var dd = today.getDate()
+                var mm = today.getMonth()+1
+                var yyyy = today.getFullYear()
+
+                if(dd<10) { dd='0'+dd;} 
+
+                if(mm<10) { mm='0'+mm; } 
+
+                today = mm+'/'+dd+'/'+yyyy
+
+                dbo.collection("Systems").updateOne({name:req.params.sys,lab:req.params.lab},{$set:{status:"reported"}},function(err,res6){
+                    if(err) throw err;
+                })
+
+                dbo.collection("Labs").updateOne({name:req.params.lab},{$set:{working:dworking,not:dnott}},function(err,res3){
+                    if(err) throw err;
+                    var ins = {tk: "tk"+dtk,system:req.params.sys,lab:req.params.lab,assigned_to:tech,status:"reported",problem:req.params.mes,date:today,solved:""}
+                    dbo.collection("Problems").insertOne(ins,function(err,res5){
+                        if(err) throw err;
+                        res.json([{mes:"success",id:"tk"+dtk}])
+                        db.close();
+                    })
+                })
+            })
+        })
+    })
+});
+
+app.get("/getStatus/:token",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Problems").find({tk:req.params.token}).project({_id:0,tk:0}).toArray(function(err,res2){
+            if (err) throw err;
+            res2.push({mes:"success"})
+            res.json(res2)
+            db.close()
+        })
+    })
+});
+
+app.get("/getTotalSystemCount/:inch",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Labs").find({incharge:req.params.inch}).project({_id:0,technician:0,count:0,working:0,not:0}).toArray(function(err,res2){
+            if(err) throw err;
+            try{var labdb = res2[0].name}catch(err){};
+            dbo.collection("Systems").find({lab:labdb}).project({_id:0}).count(function(err,count){
+                if(err) throw err;
+                res.json(count)
+                console.log(count)
+                db.close()
+            })
+        })
+    })
+});
+
+app.get("/getSystemsIncharge/:p/:inch",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Labs").find({incharge:req.params.inch}).project({_id:0,technician:0,count:0,working:0,not:0}).toArray(function(err,res2){
+            if(err) throw err;
+            try{var labdb = res2[0].name}catch(err){};
+            if(req.params.p==1){
+                dbo.collection("Systems").find({lab:labdb}).project({_id:0}).limit(10).toArray(function(err,res3){
+                    if(err) throw err;
+                    res3.push({mes:"success"})
+                    console.log(res3)
+                    res.json(res3)
+                    db.close()
+                })
+            }
+            else{
+                dbo.collection("Systems").find({lab:labdb}).project({_id:0}).skip((req.params.p-1)*10).limit(10).toArray(function(err,res3){
+                    if(err) throw err;
+                    res3.push({mes:"success"})
+                    res.json(res3)
+                    db.close()
+                })
+            }
+            
+        })
+    })
+});
+
+app.get("/getAwaitSystemCount/:inch",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Labs").find({incharge:req.params.inch}).project({_id:0,technician:0,count:0,working:0,not:0}).toArray(function(err,res2){
+            if(err) throw err;
+            console.log(res2[0])
+            try{var labdb = res2[0].name} catch(err){};
+            dbo.collection("Systems").find({lab:labdb,status:"awaiting"}).project({_id:0}).count(function(err,count){
+                if(err) throw err;
+                res.json(count)
+                console.log(count)
+                db.close()
+            })
+        })
+    })
+});
+
+app.get("/getAwaitSystemsIncharge/:p/:inch",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Labs").find({incharge:req.params.inch}).project({_id:0,technician:0,count:0,working:0,not:0}).toArray(function(err,res2){
+            if(err) throw err;
+            try{var labdb = res2[0].name}catch(err){};
+            if(req.params.p==1){
+                dbo.collection("Systems").find({lab:labdb,status:"awaiting"}).project({_id:0}).limit(10).toArray(function(err,res3){
+                    if(err) throw err;
+                    res3.push({mes:"success"})
+                    res.json(res3)
+                    db.close()
+                })
+            }
+            else{
+                dbo.collection("Systems").find({lab:labdb,status:"awaiting"}).project({_id:0}).skip((req.params.p-1)*10).limit(10).toArray(function(err,res3){
+                    if(err) throw err;
+                    res3.push({mes:"success"})
+                    res.json(res3)
+                    db.close()
+                })
+            }
+            
+        })
+    })
+});
+
+app.get("/updateStatusSys/:name/:status",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Systems").updateOne({name:req.params.name},{$set:{status:req.params.status}},function(err,res2){
+            if(err) throw err;
+            var today = new Date()
+            var dd = today.getDate()
+            var mm = today.getMonth()+1
+            var yyyy = today.getFullYear()
+
+            if(dd<10) { dd='0'+dd;} 
+            if(mm<10) { mm='0'+mm; } 
+
+            today = mm+'/'+dd+'/'+yyyy
+            solvedTime = req.params.status == "working" ? today : "";
+            dbo.collection("Problems").updateMany({system:req.params.name},{$set:{status:req.params.status,solved:solvedTime}},function(err,res3){
+                if(err) throw err;
+                res.json([{mes:"success"}])
+                db.close()
+            })
+        })
+        
+    })
+});
+
+app.get("/getTotalReportedSystemCount/:tech",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Problems").find({assigned_to:req.params.tech,status:"reported"}).count(function(err,count){
+            if(err) throw err;
+            res.json(count)
+            console.log(count)
+            db.close()
+        })
+    })
+});
+
+app.get("/getReportedSystemsTechnician/:p/:tech",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        
+        if(req.params.p==1){
+            dbo.collection("Problems").find({assigned_to:req.params.tech,status:"reported"}).project({_id:0,assigned_to:0,status:0,solved:0}).limit(10).toArray(function(err,res3){
+                if(err) throw err;
+                res3.push({mes:"success"})
+                res.json(res3)
+                db.close()
+            })
+        }
+        else{
+            dbo.collection("Problems").find({assigned_to:req.params.tech,status:"reported"}).project({_id:0,assigned_to:0,status:0,solved:0}).skip((req.params.p-1)*10).limit(10).toArray(function(err,res3){
+                if(err) throw err;
+                res3.push({mes:"success"})
+                res.json(res3)
+                db.close()
+            })
+        }
+    })
+});
+
+app.get("/updateStatusTech/:tk/:system/:status",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Systems").updateOne({name:req.params.system},{$set:{status:req.params.status}},function(err,res2){
+            if(err) throw err;
+            dbo.collection("Problems").updateOne({tk:req.params.tk},{$set:{status:req.params.status}},function(err,res3){
+                if(err) throw err;
+                res.json([{mes:"success"}])
+                db.close()
+            })
+        })
+        
+    })
+});
+
+app.get("/getTotalSelectedSystemCount/:tech",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Problems").find({assigned_to:req.params.tech,status:"in progress"}).count(function(err,count){
+            if(err) throw err;
+            res.json(count)
+            console.log(count)
+            db.close()
+        })
+    })
+});
+
+app.get("/getSelectedSystemsTechnician/:p/:tech",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        
+        if(req.params.p==1){
+            dbo.collection("Problems").find({assigned_to:req.params.tech,status:"in progress"}).project({_id:0,assigned_to:0,status:0,solved:0}).limit(10).toArray(function(err,res3){
+                if(err) throw err;
+                res3.push({mes:"success"})
+                res.json(res3)
+                db.close()
+            })
+        }
+        else{
+            dbo.collection("Problems").find({assigned_to:req.params.tech,status:"in progress"}).project({_id:0,assigned_to:0,status:0,solved:0}).skip((req.params.p-1)*10).limit(10).toArray(function(err,res3){
+                if(err) throw err;
+                res3.push({mes:"success"})
+                res.json(res3)
+                db.close()
+            })
+        }
+    })
+});
+
+app.get("/getTotalAwaitSystemCount/:tech",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Problems").find({assigned_to:req.params.tech,status:"awaiting"}).count(function(err,count){
+            if(err) throw err;
+            res.json(count)
+            console.log(count)
+            db.close()
+        })
+    })
+});
+
+app.get("/getAwaitSystemsTechnician/:p/:tech",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        
+        if(req.params.p==1){
+            dbo.collection("Problems").find({assigned_to:req.params.tech,status:"awaiting"}).project({_id:0,assigned_to:0,status:0,solved:0}).limit(10).toArray(function(err,res3){
+                if(err) throw err;
+                res3.push({mes:"success"})
+                res.json(res3)
+                db.close()
+            })
+        }
+        else{
+            dbo.collection("Problems").find({assigned_to:req.params.tech,status:"awaiting"}).project({_id:0,assigned_to:0,status:0,solved:0}).skip((req.params.p-1)*10).limit(10).toArray(function(err,res3){
+                if(err) throw err;
+                res3.push({mes:"success"})
+                res.json(res3)
+                db.close()
+            })
+        }
+    })
+});
+
+app.get("/getTotalSolvedSystemCount/:tech",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        dbo.collection("Problems").find({assigned_to:req.params.tech,status:"working"}).count(function(err,count){
+            if(err) throw err;
+            res.json(count)
+            console.log(count)
+            db.close()
+        })
+    })
+});
+
+app.get("/getTotalSystemsTechnician/:p/:tech",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if (err) throw err;
+        dbo = db.db("HMS");
+        
+        if(req.params.p==1){
+            dbo.collection("Problems").find({assigned_to:req.params.tech,status:"working"}).project({_id:0,assigned_to:0,status:0,solved:0}).limit(10).toArray(function(err,res3){
+                if(err) throw err;
+                res3.push({mes:"success"})
+                res.json(res3)
+                db.close()
+            })
+        }
+        else{
+            dbo.collection("Problems").find({assigned_to:req.params.tech,status:"working"}).project({_id:0,assigned_to:0,status:0,solved:0}).skip((req.params.p-1)*10).limit(10).toArray(function(err,res3){
+                if(err) throw err;
+                res3.push({mes:"success"})
+                res.json(res3)
+                db.close()
+            })
+        }
+    })
+});
+
+app.get("/systemCounts",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if(err) throw err;
+        dbo = db.db("HMS")
+        dbo.collection("Labs").find({}).project({_id:0,}).toArray(function(err,res2){
+            if(err) throw err;
+            res.json(res2)
+            db.close()
+        })
+        
+    })
+});
+
+app.get("/allSolved",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if(err) throw err;
+        dbo = db.db("HMS")
+        dbo.collection("Problems").find({status:"working"}).count(function(err,count){
+            if(err) throw err;
+            res.json(count)
+        })
+    })
+});
+
+app.get("/getSolvedPages/:p",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if(err) throw err;
+        dbo = db.db("HMS")
+
+        if(req.params.p==1){
+            dbo.collection("Problems").find({status:"working"}).project({_id:0,status:0}).limit(10).toArray(function(err,res3){
+                if(err) throw err;
+                res3.push({mes:"success"})
+                res.json(res3)
+                db.close()
+            })
+        }
+        else{
+            dbo.collection("Problems").find({status:"working"}).project({_id:0,status:0}).skip((req.params.p-1)*10).limit(10).toArray(function(err,res3){
+                if(err) throw err;
+                res3.push({mes:"success"})
+                res.json(res3)
+                db.close()
+            })
+        }
+    })
+});
+
+app.get("/allPresent",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if(err) throw err;
+        dbo = db.db("HMS")
+        dbo.collection("Problems").find({status:{$ne:"working"}}).count(function(err,count){
+            if(err) throw err;
+            res.json(count)
+        })
+    })
+});
+
+app.get("/getPresentPages/:p",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if(err) throw err;
+        dbo = db.db("HMS")
+
+        if(req.params.p==1){
+            dbo.collection("Problems").find({status:{$ne:"working"}}).project({_id:0,solved:0}).limit(10).toArray(function(err,res3){
+                if(err) throw err;
+                res3.push({mes:"success"})
+                res.json(res3)
+                db.close()
+            })
+        }
+        else{
+            dbo.collection("Problems").find({status:{$ne:"working"}}).project({_id:0,solved:0}).skip((req.params.p-1)*10).limit(10).toArray(function(err,res3){
+                if(err) throw err;
+                res3.push({mes:"success"})
+                res.json(res3)
+                db.close()
+            })
+        }
+    })
+});
+
+app.get("/getHodDept/:name",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if(err) throw err;
+        dbo = db.db("HMS")
+        dbo.collection("Departments").find({hod:req.params.name}).project({_id:0,hod:0}).toArray(function(err,res2){
+            if(err) throw err;
+            res.json(res2)
+            db.close()
+        })
+    })
+});
+
+app.get("/getDeptSys/:dept",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if(err) throw err;
+        dbo = db.db("HMS")
+        dbo.collection("DeptPeri").find({dept:req.params.dept}).project({_id:0}).toArray(function(err,res2){
+            if(err) throw err;
+            res.json(res2)
+            db.close()
+        })
+    })
+});
+
+app.get("/updateDeptPro/:dept/:name/:tech/:mes/:status",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if(err) throw err;
+        dbo = db.db("HMS")
+        var cond = {dept:req.params.dept,name:req.params.name}
+        if(req.params.status=="working"){
+            var ins = {$set:{assigned_to:"",mes:"",status:req.params.status}}
+        }
+        else{
+            var ins = {$set:{assigned_to:req.params.tech,mes:req.params.mes,status:req.params.status}}
+        }
+        dbo.collection("DeptPeri").updateOne(cond,ins,function(err,res2){
+            if(err) throw err;
+            res.json([{res:"success"}])
+            db.close()
+        })
+    })
+});
+
+app.get("/getDeptTechSys/:tech",(req,res)=>{
+    mongoClient.connect(M_url,function(err,db){
+        if(err) throw err;
+        dbo = db.db("HMS")
+        dbo.collection("DeptPeri").find({assigned_to:req.params.tech}).project({_id:0}).toArray(function(err,res2){
+            if(err) throw err;
+            res.json(res2)
+            db.close()
+        })
+    })
+});
+
+app.listen(3000)
