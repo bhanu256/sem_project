@@ -1,0 +1,23 @@
+.menu{
+    width : 100%;
+    background-color: aqua;
+    float: left;
+    display: flex;
+}
+
+.menu p{
+    text-decoration: none;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.hilight{
+  flex: 20%;
+  text-align: center;
+}
+
+.hiNum{
+  font-size: 2em;
+}

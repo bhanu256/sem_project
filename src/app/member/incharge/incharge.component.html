@@ -1,0 +1,80 @@
+<h1>Welcome back {{name}}</h1>
+
+<div class="menu">
+    <p (click)="all()">All systems</p>
+    <p (click)="awaiting()">Awaiting</p>
+    <p (click)="logout()">Logout</p>
+</div>
+
+<div>
+    <ng-container *ngIf=comp>
+        <div>
+            <p>List of all systems</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            <p>System Number</p>
+                        </th>
+                        <th>
+                            <p>Status</p>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let sys of total_sys | paginate : {itemsPerPage : countPerPage, currentPage : page, totalItems : allcount}">
+                        <td>
+                            <p>{{sys.name}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.status}}</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="pager">
+                <pagination-controls (pageChange)="allSer($event)"></pagination-controls>
+            </div>
+        </div>
+    </ng-container>
+    <ng-container *ngIf=awaits>
+        <div>
+            <p>List of systems which need to be evaluated</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            <p>System Number</p>
+                        </th>
+                        <th>
+                            <p>Status</p>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let sys of await_sys | paginate : {itemsPerPage : countPerPage, currentPage : awaitpage, totalItems : awaitcount}">
+                        <td>
+                            <p>{{sys.name}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.status}}</p>
+                        </td>
+                        <td>
+                            <select #astatus>
+                                <option *ngFor="let status of list_status" value={{status}}>{{status}}</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button (click)="updateSta(sys.name,astatus.value)">Update</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="pager">
+                <pagination-controls (pageChange)="awaitingSer($event)"></pagination-controls>
+            </div>
+        </div>
+    </ng-container>
+</div>

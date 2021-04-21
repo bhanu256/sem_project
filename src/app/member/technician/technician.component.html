@@ -1,0 +1,277 @@
+<h1>Welcome back {{name}}</h1>
+
+<div class="menu">
+    <p (click)="all_problems()">Reported Problems</p>
+    <p (click)="selected()">In progress</p>
+    <p (click)="awaiting()">Awaiting</p>
+    <p (click)="completed()">Completed</p>
+    <p (click)="logout()">Logout</p>
+    <p (click)="deptSys()">Department</p>
+</div>
+
+<div>
+    <ng-container *ngIf=all>
+        <div>
+            <p>List of all systems</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            <p>Token Number</p>
+                        </th>
+                        <th>
+                            <p>Lab</p>
+                        </th>
+                        <th>
+                            <p>System</p>
+                        </th>
+                        <th>
+                            <p>Date</p>
+                        </th>
+                        <th>
+                            <p>Problem</p>
+                        </th>
+                        <th>
+
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let sys of total_rsys | paginate : {itemsPerPage : countPerPage, currentPage : trpage, totalItems : allrcount}">
+                        <td>
+                            <p>{{sys.tk}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.lab}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.system}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.date}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.problem}}</p>
+                        </td>
+                        <td>
+                            <button (click)="updateSta(sys.tk,sys.system,'in progress',sys)">Select</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pager">
+            <pagination-controls (pageChange)="all_problemsSer($event)"></pagination-controls>
+        </div>
+    </ng-container>
+    <ng-container *ngIf=select>
+        <div>
+            <p>List of systems which need to be evaluated</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            <p>Token Number</p>
+                        </th>
+                        <th>
+                            <p>Lab</p>
+                        </th>
+                        <th>
+                            <p>System</p>
+                        </th>
+                        <th>
+                            <p>Date</p>
+                        </th>
+                        <th>
+                            <p>Problem</p>
+                        </th>
+                        <th>
+
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let sys of total_ssys | paginate : {itemsPerPage : countPerPage, currentPage : tspage, totalItems : allscount}">
+                        <td>
+                            <p>{{sys.tk}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.lab}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.system}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.date}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.problem}}</p>
+                        </td>
+                        <td>
+                            <button (click)="updateSta(sys.tk,sys.system,'awaiting',sys)">Select</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pager">
+            <pagination-controls (pageChange)="selectedSer($event)"></pagination-controls>
+        </div>
+    </ng-container>
+    <ng-container *ngIf=await>
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            <p>Token Number</p>
+                        </th>
+                        <th>
+                            <p>Lab</p>
+                        </th>
+                        <th>
+                            <p>System</p>
+                        </th>
+                        <th>
+                            <p>Date</p>
+                        </th>
+                        <th>
+                            <p>Problem</p>
+                        </th>
+                        <th>
+
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let sys of total_awsys | paginate : {itemsPerPage : countPerPage, currentPage : tawpage, totalItems : allawcount}">
+                        <td>
+                            <p>{{sys.tk}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.lab}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.system}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.date}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.problem}}</p>
+                        </td>
+                        <!-- <td>
+                            <button (click)="updateSta(sys.tk,sys.system,'working')">Select</button>
+                        </td> -->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pager">
+            <pagination-controls (pageChange)="awaitingSer($event)"></pagination-controls>
+        </div>
+    </ng-container>
+    <ng-container *ngIf=comp>
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            <p>Token Number</p>
+                        </th>
+                        <th>
+                            <p>Lab</p>
+                        </th>
+                        <th>
+                            <p>System</p>
+                        </th>
+                        <th>
+                            <p>Date</p>
+                        </th>
+                        <th>
+                            <p>Problem</p>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let sys of total_solved | paginate : {itemsPerPage : countPerPage, currentPage : tsolvedpage, totalItems : allsolved}">
+                        <td>
+                            <p>{{sys.tk}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.lab}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.system}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.date}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.problem}}</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pager">
+            <pagination-controls (pageChange)="completedSer($event)"></pagination-controls>
+        </div>
+    </ng-container>
+    <ng-container *ngIf=deptP>
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            <p>System</p>
+                        </th>
+                        <th>
+                            <p>Department</p>
+                        </th>
+                        <th>
+                            <p>Type</p>
+                        </th>
+                        <th>
+                            <p>Problem</p>
+                        </th>
+                        <th>
+                            <p>Status</p>
+                        </th>
+                        <th>
+                            <p>Options</p>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let sys of dept_sys">
+                        <td>
+                            <p>{{sys.name}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.dept}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.type}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.mes}}</p>
+                        </td>
+                        <td>
+                            <p>{{sys.status}}</p>
+                        </td>
+                        <td>
+                            <select #astatus>
+                                <option value="in progress">Select</option>
+                                <option value="working">Completed</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button (click)="updateDeptSta(sys.name,sys.dept,sys.mes,astatus.value)">Update</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </ng-container>
+</div>

@@ -1,0 +1,137 @@
+<h1>Welcome! How can I help you</h1>
+
+<div class="menu">
+        <p (click)="report()">Report</p>
+        <p (click)="status()">Check status</p>
+</div>
+
+
+<div>
+    <ng-container *ngIf=rep> 
+    <div id="report">
+        <h1>Please select which system you want to report problematic</h1>
+        <form class="form">
+            <table style="">
+                <tr>
+                    <td>
+                        <h3>Lab</h3>
+                    </td>
+                    <td>
+                        <select #slab (change)="changed(slab.value)">
+                            <option>select</option>
+                            <option *ngFor="let lab of labs_db" value={{lab}}>{{lab}}</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3>System</h3>
+                    </td>
+                    <td>
+                        <select #ssys>
+                            <option *ngFor="let sys of systems_db" value={{sys}}>{{sys}}</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3>Message</h3>
+                    </td>
+                    <td>
+                        <input type="text" #prob/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+
+                    </td>
+                    <td>
+                        <button value="submit" (click)="reportSer(slab.value,ssys.value,prob.value)">Submit</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    </ng-container>
+    <ng-container *ngIf=tk>
+        <div>
+            <p>Your token id is {{tk_db}}</p>
+        </div>
+    </ng-container>
+    <ng-container *ngIf=sta>
+    <div id="status">
+        <form class="form">
+            <table >
+                <tr>
+                    <td>
+                        <h5>Please enter your token number :</h5>
+                    </td>
+                    <td>
+                        <input type="text" #token/>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <button value="submit" (click)="statusSer(token.value)">Submit</button>
+                    </td>
+                </tr>
+            </table>
+            <ng-container *ngIf=status_db>
+                <table >
+                    <tr>
+                        <td>
+                            <p>System :</p>
+                        </td>
+                        <td>
+                            <p>{{db_sys}}</p>
+                        </td>
+                        <td>
+                            <p>Lab :</p>
+                        </td>
+                        <td>
+                            <p>{{db_lab}}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p>Technician :</p>
+                        </td>
+                        <td>
+                            <p>{{db_tech}}</p>
+                        </td>
+                        <td>
+                            <p>Status :</p>
+                        </td>
+                        <td>
+                            <p>{{db_sta}}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p>Reported date :</p>
+                        </td>
+                        <td>
+                            <p>{{db_rdate}}</p>
+                        </td>
+                        <td>
+                            <p>Solved data:</p>
+                        </td>
+                        <td>
+                            <p>{{db_sdate}}</p>
+                        </td>
+                    </tr>
+                </table>
+                <tr>
+                    <td>
+                        <p>Problem :</p>
+                    </td>
+                    <td>
+                        <p>{{db_mes}}</p>
+                    </td>
+                </tr>
+            </ng-container>
+        </form>
+    </div>
+    </ng-container>
+</div>

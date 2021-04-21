@@ -1,0 +1,207 @@
+<h1>Welcome back {{name}}</h1>
+
+<div class="menu">
+    <p (click)="peris()">Peripherals</p>
+    <p (click)="report()">Report</p>
+    <p (click)="past()">Solved problems</p>
+    <p (click)="present()">Present problems</p>
+    <p (click)="logout()">Logout</p>
+</div>
+
+<div>
+    <ng-container *ngIf=peris_b>
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            <p>System</p>
+                        </th>
+                        <th>
+                            <p>Type</p>
+                        </th>
+                        <th>
+                            <p>Status</p>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let psys of sys">
+                        <td>
+                            <p>{{psys.name}}</p>
+                        </td>
+                        <td>
+                            <p>{{psys.type}}</p>
+                        </td>
+                        <td>
+                            <p>{{psys.status}}</p><p *ngIf=psys.assigned_to>({{psys.assigned_to}})</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </ng-container>
+    <ng-container *ngIf=report_b>
+        <div>
+            <table>
+                <tr>
+                    <td>
+                        <p>System :</p>
+                    </td>
+                    <td>
+                        <!-- <select #ssn> condition on loops
+                            <option *ngFor="let psys of jsys()">{{psys.name}}</option>
+                        </select> -->
+                        <select #ssn>
+                            <option *ngFor="let psys of sys">{{psys.name}}</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Assign to :</p>
+                    </td>
+                    <td>
+                        <select #stn>
+                            <option *ngFor="let techs of tech">{{techs}}</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Problem :</p>
+                    </td>
+                    <td>
+                        <input type="text" #mes/>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <button (click)="reportSer(ssn.value,stn.value,mes.value)">Submit</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </ng-container>
+    <ng-container *ngIf=past_b>
+        <div>
+            <p>List of systems past problems</p>
+            <table>
+                <thead>
+                    <th>
+                        <p>Token ID</p>
+                    </th>
+                    <th>
+                        <p>System</p>
+                    </th>
+                    <th>
+                        <p>Lab</p>
+                    </th>
+                    <th>
+                        <p>Technicin</p>
+                    </th>
+                    <th>
+                        <p>Problem</p>
+                    </th>
+                    <th>
+                        <p>Reported Date</p>
+                    </th>
+                    <th>
+                        <p>Solved Date</p>
+                    </th>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let pro of sol_pro | paginate : {itemsPerPage : countPerPage, currentPage : cur_solved_page, totalItems : tot_solved}">
+                        <td>
+                            <p>{{pro.tk}}</p>
+                        </td>
+                        <td>
+                            <p>{{pro.system}}</p>
+                        </td>
+                        <td>
+                            <p>{{pro.lab}}</p>
+                        </td>
+                        <td>
+                            <p>{{pro.assigned_to}}</p>
+                        </td>
+                        <td>
+                            <p>{{pro.problem}}</p>
+                        </td>
+                        <td>
+                            <p>{{pro.date}}</p>
+                        </td>
+                        <td>
+                            <p>{{pro.solved}}</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="pager">
+                <pagination-controls (pageChange)="pastSer($event)"></pagination-controls>
+            </div>
+        </div>
+    </ng-container>
+    <ng-container *ngIf=present_b>
+        <div>
+            <p>List of systems present problems</p>
+            <table>
+                <thead>
+                    <th>
+                        <p>Token ID</p>
+                    </th>
+                    <th>
+                        <p>System</p>
+                    </th>
+                    <th>
+                        <p>Lab</p>
+                    </th>
+                    <th>
+                        <p>Technicin</p>
+                    </th>
+                    <th>
+                        <p>Problem</p>
+                    </th>
+                    <th>
+                        <p>Reported Date</p>
+                    </th>
+                    <th>
+                        <p>Status</p>
+                    </th>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let pro of pre_pro | paginate : {itemsPerPage : countPerPage, currentPage : cur_present_page, totalItems : tot_present}">
+                        <td>
+                            <p>{{pro.tk}}</p>
+                        </td>
+                        <td>
+                            <p>{{pro.system}}</p>
+                        </td>
+                        <td>
+                            <p>{{pro.lab}}</p>
+                        </td>
+                        <td>
+                            <p>{{pro.assigned_to}}</p>
+                        </td>
+                        <td>
+                            <p>{{pro.problem}}</p>
+                        </td>
+                        <td>
+                            <p>{{pro.date}}</p>
+                        </td>
+                        <td>
+                            <p>{{pro.status}}</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="pager">
+                <pagination-controls (pageChange)="presentSer($event)"></pagination-controls>
+            </div>
+        </div>
+    </ng-container>
+    <ng-container *ngIf=suc>
+        <p>Success</p>
+    </ng-container>
+</div>
+

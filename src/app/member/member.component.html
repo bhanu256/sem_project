@@ -1,0 +1,46 @@
+<h1>Welcome back! Please login with your credentials</h1>
+<form>
+    <table style="overflow-x: auto;margin: auto;">
+        <tr>
+            <td>
+                <h3>Designation :</h3>
+            </td>
+            <td>
+                <select name="designation" (change)="getNames(sss.value)" #sss>
+                    <option>Select</option>
+                    <option value="admin">Admin</option>
+                    <option value="administrator">Heads</option>
+                    <option value="hod">HOD</option>
+                    <option value="incharge">Incharge</option>
+                    <option value="technician">Technician</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h3>Username :</h3>
+            </td>
+            <td>
+                <select [(ngModel)]="name" name="name" #sname>
+                    <option *ngFor="let nam of preNameList">{{nam}}</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h3>Password :</h3>
+            </td>
+            <td>
+                <input type="password" #pass/><br>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <p>{{warn}}</p>
+                <button (click)="auth(sss.value,sname.value,pass.value)">Login</button>
+            </td>
+        </tr>
+    </table>
+</form>
+<app-incharge [incha]='incharge' *ngIf=false></app-incharge>

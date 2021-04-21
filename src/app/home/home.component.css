@@ -1,0 +1,22 @@
+.bg{
+    background: url("home_img.jpg");
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.but{
+    float : right;
+    margin : 10%;
+}
+
+.navbut{
+    margin-top: 100px;
+    width : 200px;
+    background-color:aqua;
+    border : 0;
+    height: 75px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: medium;
+}

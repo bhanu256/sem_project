@@ -1,0 +1,393 @@
+<h1>Welcome back {{name}}</h1>
+
+<div class="menu">
+    <p (click)="member()">Members</p>
+    <p (click)="labs()">Labs</p>
+    <p (click)="dept()">Departments</p>
+    <p (click)="problems()">Problems</p>
+    <p (click)="logout()">Logout</p>
+</div>
+
+<div>
+    <div class="sideOptions">
+        <ng-container *ngIf=n_member>
+            <div class="sidemenu">
+                <p (click)="addMem()">Add a new member</p>
+                <p (click)="modMem()">Modify a existing member</p>
+                <p (click)="delMem()">Delete a member</p>
+            </div>
+        </ng-container>
+        <ng-container *ngIf=n_labs>
+            <div class="sidemenu">
+                <p (click)="addLab()">Add a new lab</p>
+                <p (click)="modLab()">Modify a existing lab</p>
+                <p (click)="delLab()">Delete a lab</p>
+            </div>
+        </ng-container>
+        <ng-container *ngIf=n_dept>
+            <div class="sidemenu">
+                <p (click)="addDep()">Add a new Department</p>
+                <p (click)="modDep()">Add peripheral to department</p>
+                <!-- <p (click)="delDep()">Delete a department</p> -->
+            </div>
+        </ng-container>
+        <ng-container *ngIf=n_problems>
+            <div class="sidemenu">
+                <p>Report problem</p>
+                <p>Change problem status</p>
+                <p>Delete a problem</p>
+            </div>
+        </ng-container>
+    </div>
+    <div class="functional">
+        <ng-container *ngIf=suc>
+            <div>
+                <p>Success</p>
+            </div>
+        </ng-container>
+        <ng-container *ngIf=aMem>
+            <div>
+                <form>
+                    <table>
+                        <tr>
+                            <td>
+                                <p>Member name</p>
+                            </td>
+                            <td>
+                                <input type="text" #Mname/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Designation</p>
+                            </td>
+                            <td>
+                                <select #des>
+                                    <option *ngFor="let pos of positions" value={{pos}}>{{pos}}</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Password :</p>
+                            </td>
+                            <td>
+                                <input type="password" #Mpass/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <button value="submit" (click)="addMemSer(Mname.value,des.value,Mpass.value)">Submit</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </ng-container>
+        <ng-container *ngIf=mMem>
+            <div>
+                <form>
+                    <table>
+                        <tr>
+                            <td>
+                                <p>Select the member</p>
+                            </td>
+                            <td>
+                                <select #eName (change)="upMemData(eName.value)">
+                                    <option *ngFor="let mem of mem_database" value={{mem}}>{{mem}}</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>New name</p>
+                            </td>
+                            <td>
+                                <input type="text" #cName/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Designation</p>
+                            </td>
+                            <td>
+                                <select #des>
+                                    <option *ngFor="let pos of positions" value={{pos}}>{{pos}}</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Password :</p>
+                            </td>
+                            <td>
+                                <input type="password" #cPass/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <p>{{warn}}</p>
+                                <button value="submit" (click)="modMemSer(eName.value,cName.value,des.value,cPass.value)">Submit</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </ng-container>
+        <ng-container *ngIf=dMem>
+            <div>
+                <form>
+                    <table>
+                        <tr>
+                            <td>
+                                <p>Select the member</p>
+                            </td>
+                            <td>
+                                <select #dname>
+                                    <option *ngFor="let mem of mem_database" value={{mem}}>{{mem}}</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <p #jdm></p>
+                                <button (click)="delMemSer(dname.value)">Delete</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </ng-container>
+        <ng-container *ngIf=aLab>
+            <div>
+                <form>
+                    <table>
+                        <tr>
+                            <td>
+                                <p>Enter lab name</p>
+                            </td>
+                            <td>
+                                <input type="text" #lname/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Select lab incharge</p>
+                            </td>
+                            <td>
+                                <select #inch>
+                                    <option *ngFor="let inch of not_ass_incharge" value={{inch}}>{{inch}}</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Select lab technician</p>
+                            </td>
+                            <td>
+                                <select #tech>
+                                    <option *ngFor="let tech of not_ass_tech" value={{tech}}>{{tech}}</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Enter no.of systems</p>
+                            </td>
+                            <td>
+                                <input type="number" #num/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <button (click)="addLabSer(lname.value,inch.value,tech.value,num.value)">Submit</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </ng-container>
+        <ng-container *ngIf=mLab>
+            <div>
+                <form>
+                    <table>
+                        <tr>
+                            <td>
+                                <p>Select lab name</p>
+                            </td>
+                            <td>
+                                <select #slab>
+                                    <option *ngFor="let olab of lab_db" value={{olab}}>{{olab}}</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Select lab incharge</p>
+                            </td>
+                            <td>
+                                <select #sinch>
+                                    <option value="null">select</option>
+                                    <option *ngFor="let inch of not_ass_incharge" value={{inch}}>{{inch}}</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Select lab technician</p>
+                            </td>
+                            <td>
+                                <select #stech>
+                                    <option value="null">select</option>
+                                    <option *ngFor="let tech of not_ass_tech" value={{tech}}>{{tech}}</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <button (click)="modLabSer(slab.value,sinch.value,stech.value)">Submit</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </ng-container>
+        <ng-container *ngIf=dLab>
+            <div>
+                <form>
+                    <table>
+                        <tr>
+                            <td>
+                                <p>Select lab name</p>
+                            </td>
+                            <td>
+                                <select #lname>
+                                    <option *ngFor="let lab of lab_db" value={{lab}}>{{lab}}</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <button (click)="delLabSer(lname.value)">Submit</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </ng-container>
+        <ng-container *ngIf=aDep>
+            <div>
+                <form>
+                    <table>
+                        <tr>
+                            <td>
+                                <p>Enter department name</p>
+                            </td>
+                            <td>
+                                <input type="text" #dname/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Select HOD</p>
+                            </td>
+                            <td>
+                                <select #shod>
+                                    <option *ngFor="let hod of not_ass_hod" value={{hod}}>{{hod}}</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <button (click)="addDepSer(dname.value,shod.value)">Enter</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </ng-container>
+        <ng-container *ngIf=mDep>
+            <div>
+                <form>
+                    <table>
+                        <tr>
+                            <td>
+                                <p>Select Department</p>
+                            </td>
+                            <td>
+                                <select #sdept>
+                                    <option *ngFor="let depts of dept_db" value={{depts}}>{{depts}}</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Select peripheral</p>
+                            </td>
+                            <td>
+                                <select #spp>
+                                    <option *ngFor="let pp of peri" value={{pp}}>{{pp}}</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Enter device name :</p>
+                            </td>
+                            <td>
+                                <input type="text" #etext/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <button (click)="modDepSer(sdept.value,spp.value,etext.value)">Enter</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </ng-container>
+        <!-- <ng-container *ngIf=dDep>
+            <div>
+                <form>
+                    <table>
+                        <tr>
+                            <td>
+                                <p>Select department</p>
+                            </td>
+                            <td>
+                                <select #sdep>
+                                    <option *ngFor="let dept of dept_db" value={{dept}}>{{dept}}</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <button (click)="delDepSer(sdep.value)">Delete</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </ng-container> -->
+        <ng-container>
+
+        </ng-container>
+        <ng-container>
+
+        </ng-container>
+        <ng-container>
+            
+        </ng-container>
+    </div>
+    
+</div>
